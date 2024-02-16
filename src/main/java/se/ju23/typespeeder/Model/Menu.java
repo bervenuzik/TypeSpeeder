@@ -9,7 +9,7 @@ import java.util.List;
 
 @Component
 public class Menu implements MenuService {
-    List<String> options= new ArrayList<>();
+   private final List<String> options= new ArrayList<>();
     public Menu(){
         options.add("Show rules");
         options.add("Start Game");

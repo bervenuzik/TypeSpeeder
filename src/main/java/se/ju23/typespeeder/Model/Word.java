@@ -8,10 +8,10 @@ public class Word {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    private long id;
 
     @Column(name = "word", unique = true, nullable = false)
-    String word;
+    private String word;
 
     public Word() {
     }
@@ -31,5 +31,10 @@ public class Word {
 
     public void setWord(String word) {
         this.word = word;
+    }
+
+    @Override
+    public String toString() {
+        return word;
     }
 }

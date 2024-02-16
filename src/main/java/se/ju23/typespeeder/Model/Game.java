@@ -1,18 +1,31 @@
 package se.ju23.typespeeder.Model;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import se.ju23.typespeeder.Repositories.WordsRepo;
+import se.ju23.typespeeder.Services.PrintService;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Component
 public class Game implements Playable {
-    GameMode currentMode;
+    private GameMode currentMode;
+    private GameComplexity currentComplexity;
+    @Autowired
+    private WordsRepo wordsRepo;
+    @Autowired
+    private PrintService printService;
 
+    public Game(WordsRepo wordsRepo , PrintService printService) {
+        this.wordsRepo = wordsRepo;
+    }
 
+    public Game() {
+    }
 
-
-@Override
+    @Override
 public void showRules(){
     System.out.println("Welcome to TypeSpeeder! \n" +
             "The game is simple, you will be given a word and you have to type it as fast as you can. \n" +
@@ -31,8 +44,13 @@ public void showRules(){
     }
 
     @Override
-    public List<Word> generateWords(int limit) {
-        return null;
+    public List<Word> generateWords(int limit ) {
+        switch (currentComplexity){
+            case EASY ->    {   return wordsRepo.findRandomWords(limit , currentComplexity.EASY.getMinWordLength() , currentComplexity.EASY.getMaxWordLength());      }
+            case MEDIUM ->  {   return wordsRepo.findRandomWords(limit , currentComplexity.MEDIUM.getMinWordLength() , currentComplexity.MEDIUM.getMaxWordLength());  }
+            case HARD ->    {   return wordsRepo.findRandomWords(limit , currentComplexity.HARD.getMinWordLength() , currentComplexity.HARD.getMaxWordLength());      }
+            default ->      {   return new ArrayList<Word>();                                                                                           }
+        }
     }
 
     @Override
@@ -67,5 +85,12 @@ public void showRules(){
     public void stopSentencesGame() {
 
     }
+
+    @Override
+    public void changeGameMode(GameMode mode) {
+        currentMode = mode;
+
+    }
+
 
 }

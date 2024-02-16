@@ -17,4 +17,5 @@ public interface Playable {
     void stopWordGame();
     void startSentencesGame();
     void stopSentencesGame();
+    void changeGameMode(GameMode  gameMode);
 }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Main implements CommandLineRunner {
     @Autowired
-    Controllable controller;
+    private Controllable controller;
     @Override
     public void run(String... args) throws Exception {
         controller.start();

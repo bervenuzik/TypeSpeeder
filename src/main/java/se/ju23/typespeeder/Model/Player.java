@@ -9,15 +9,15 @@ public class Player {
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY)
     @NonNull
-    long id;
+    private long id;
 
     @Column( name = "username" , unique = true , nullable = false)
-    String username;
+    private String username;
 
     @Column( name = "password" ,nullable = false)
-    String password;
+    private String password;
     @Column( name = "nickname" ,unique = true, nullable = false)
-    String nickname;
+    private String nickname;
 
 
     public Player(String username, String password, String nickname) {

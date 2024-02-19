@@ -12,6 +12,7 @@ public class Menu implements MenuService {
    private final List<String> options= new ArrayList<>();
     public Menu(){
         options.add("Show rules");
+        options.add("Change mode");
         options.add("Start Game");
         options.add("My results");
         options.add("Top players");
@@ -21,8 +22,11 @@ public class Menu implements MenuService {
     @Override
     public List<String> displayMenu() {
         System.out.print(PrintColors.GREEN.getColor());
-        for (String option : options) {
-            System.out.println(option);
+
+
+        for (int i = 0; i < options.size(); i++) {
+            String option = options.get(i);
+            System.out.println(i+1 + " " + options.get(i));
         }
         System.out.print(PrintColors.RESET.getColor());
         return getMenuOptions();

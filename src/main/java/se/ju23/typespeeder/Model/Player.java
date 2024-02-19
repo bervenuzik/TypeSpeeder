@@ -18,6 +18,9 @@ public class Player {
     private String password;
     @Column( name = "nickname" ,unique = true, nullable = false)
     private String nickname;
+    @Column( name = "type" ,nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PlayerType type;
 
 
     public Player(String username, String password, String nickname) {

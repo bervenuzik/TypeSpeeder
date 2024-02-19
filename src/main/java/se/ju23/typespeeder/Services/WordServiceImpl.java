@@ -20,9 +20,9 @@ private WordsRepo wordsRepo;
     public WordServiceImpl() {
     }
 
-    public List<Word> generateRandomWords(int amount) {
-        List<Word> words;
-        words = wordsRepo.findRandomWords(amount);
-        return words;
+    public List<Word> generateRandomWords(int minLenght , int maxLenght , int amount ) {
+
+        return wordsRepo.findRandomWords(minLenght , maxLenght , amount);
+
     }
 }

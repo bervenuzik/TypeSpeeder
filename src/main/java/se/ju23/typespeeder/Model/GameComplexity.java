@@ -1,14 +1,17 @@
 package se.ju23.typespeeder.Model;
 
 public enum  GameComplexity {
-    EASY(0,5),
-    MEDIUM(4,7),
-    HARD(7,20);
+    EASY(1,0,5),
+    MEDIUM(2,4,10),
+    HARD(3,10,20),
+    MIX(4,0,20);
 
     private int minWordLength;
     private int maxWordLength;
+    private int order;
 
-    GameComplexity(int minWordLength, int maxWordLength) {
+    GameComplexity(int order ,int minWordLength, int maxWordLength) {
+        this.order = order;
         this.minWordLength = minWordLength;
         this.maxWordLength = maxWordLength;
     }
@@ -20,4 +23,5 @@ public enum  GameComplexity {
     public int getMaxWordLength() {
         return maxWordLength;
     }
+    public int getOrder(){return order;}
 }

@@ -1,6 +1,7 @@
 package se.ju23.typespeeder.Model;
 
 import jakarta.persistence.*;
+import se.ju23.typespeeder.PrintColors;
 
 @Entity
 @Table( name = "words")
@@ -12,18 +13,25 @@ public class Word {
 
     @Column(name = "word", unique = true, nullable = false)
     private String word;
+    @Transient
+    private int points;
+    @Transient
+    private boolean typedCorrectly;
+
+    @Transient
+    private WordComplexity complexity;
 
     public Word() {
+
     }
 
     public Word(String word) {
         this.word = word;
         this.id = 1;
+        this.typedCorrectly  = false;
+        calculateComplexity();
     }
 
-    public long getId() {
-        return id;
-    }
 
     public String getWord() {
         return word;
@@ -32,9 +40,37 @@ public class Word {
     public void setWord(String word) {
         this.word = word;
     }
+    @PostLoad
+    private void calculateComplexity(){
+        if(word.length() < 5){
+             complexity = WordComplexity.EASY;
+        }else if(word.length() < 8){
+             complexity = WordComplexity.MEDIUM;
+        }else{
+             complexity = WordComplexity.HARD;
+        }
+        points = complexity.getPoints();
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public boolean isTypedCorrectly() {
+        return typedCorrectly;
+    }
+
+    public void setTypedCorrectly(boolean typedCorrectly) {
+        this.typedCorrectly = typedCorrectly;
+    }
 
     @Override
     public String toString() {
-        return word;
-    }
+        switch (complexity){
+            case EASY -> {return word + "  " + getPoints();}
+            case MEDIUM -> {return PrintColors.YELLOW.getColor() + word + PrintColors.RESET.getColor() + "  " + getPoints();}
+            case HARD -> {return PrintColors.RED.getColor() + word + PrintColors.RESET.getColor() + "  " + getPoints();}
+            default -> {return word;}
+            }
+        }
 }

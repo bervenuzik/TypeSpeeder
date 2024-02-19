@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ResultsRepo extends JpaRepository <Result ,Long> {
-    List<Result> findAllByPlayerId(Player player);
+    List<Result> findResultsByPlayer(Player player);
 }

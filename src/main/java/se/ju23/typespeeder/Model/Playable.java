@@ -5,20 +5,21 @@ import java.util.List;
 
 public interface Playable {
     void showRules();
-    int calculateScore(Date time, List<Word> results);
 
     List<Word> generateWords(int limit);
 
     void changeGameStatus();
-   void startGame();
+    void startGame();
 
     void startWordGame();
 
-    void stopWordGame();
     void startSentencesGame();
-    void stopSentencesGame();
 
-    void setGameMode(GameMode mode);
+    void changeGameMode();
+    void changeGameComplexity();
+    void showScore();
+    GameComplexity getComplexity();
+    GameMode getGameMode();
 
-    void setComplexity(GameComplexity value);
+    int getScore();
 }

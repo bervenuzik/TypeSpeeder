@@ -42,9 +42,9 @@ public class Word {
     }
     @PostLoad
     private void calculateComplexity(){
-        if(word.length() < 5){
+        if(word.length() <= GameComplexity.EASY.getMaxWordLength()){
              complexity = WordComplexity.EASY;
-        }else if(word.length() < 8){
+        }else if(word.length() <= GameComplexity.MEDIUM.getMaxWordLength()){
              complexity = WordComplexity.MEDIUM;
         }else{
              complexity = WordComplexity.HARD;
@@ -67,9 +67,9 @@ public class Word {
     @Override
     public String toString() {
         switch (complexity){
-            case EASY -> {return word + "  " + getPoints();}
-            case MEDIUM -> {return PrintColors.YELLOW.getColor() + word + PrintColors.RESET.getColor() + "  " + getPoints();}
-            case HARD -> {return PrintColors.RED.getColor() + word + PrintColors.RESET.getColor() + "  " + getPoints();}
+            case EASY -> {return word;}
+            case MEDIUM -> {return PrintColors.YELLOW.getColor() + word + PrintColors.RESET.getColor();}
+            case HARD -> {return PrintColors.RED.getColor() + word + PrintColors.RESET.getColor();}
             default -> {return word;}
             }
         }

@@ -1,10 +1,19 @@
 package se.ju23.typespeeder.Model;
 
-import java.lang.reflect.Method;
+public enum  GameMode implements Ordered {
+    WORDS(1),
+    SENTENCES(2);
 
-public enum GameMode {
-    WORDS,
-    SENTENCES;
+    int order;
+
+    GameMode(int order) {
+        this.order = order;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
 }
 
 

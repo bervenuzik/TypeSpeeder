@@ -27,7 +27,6 @@ public class Player {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
-        this.id = 1;
     }
     public Player() {
     }
@@ -52,11 +51,11 @@ public class Player {
         this.id = id;
     }
 
-    private void setUsername(String username) {
+    public void setUsername(String username) {
         this.username = username;
     }
 
-    private void setPassword(String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -64,10 +63,21 @@ public class Player {
         this.nickname = nickname;
     }
 
+//    @Override
+//    public String toString() {
+//        return "Player{" +
+//                "nickname='" + nickname + '\'' +
+//                '}';
+//    }
+
     @Override
     public String toString() {
         return "Player{" +
-                "nickname='" + nickname + '\'' +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", type=" + type +
                 '}';
     }
 }

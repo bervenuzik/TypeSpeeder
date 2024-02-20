@@ -9,4 +9,7 @@ public interface PlayerService {
       boolean passwordValidator(String password);
       Optional<Player> login();
       Optional<Player> regNewPlayer();
+      void changeUsername(Player player);
+      void changePassword(Player player);
+      void changeNickname(Player player);
 }

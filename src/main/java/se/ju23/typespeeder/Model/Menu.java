@@ -13,10 +13,13 @@ public class Menu implements MenuService {
     public Menu(){
         options.add("Show rules");
         options.add("Change mode");
+        options.add("Change complexity");
         options.add("Start Game");
         options.add("My results");
         options.add("Top players");
+        options.add("Account settings");
         options.add("Log out");
+        options.add("Exit");
     }
 
     @Override

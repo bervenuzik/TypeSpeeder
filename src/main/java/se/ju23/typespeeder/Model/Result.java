@@ -20,9 +20,9 @@ public class Result {
     @Column(name = "complexity")
     private GameComplexity complexity;
     @Column(name = "result")
-    private int result;
+    private double result;
 
-    public Result(Player player , GameMode gameMode,GameComplexity complexity , int result) {
+    public Result(Player player , GameMode gameMode,GameComplexity complexity , double result) {
         this.player = player;
         this.result = result;
         this.complexity = complexity;

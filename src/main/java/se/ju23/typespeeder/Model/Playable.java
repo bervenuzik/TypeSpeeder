@@ -21,5 +21,5 @@ public interface Playable {
     GameComplexity getComplexity();
     GameMode getGameMode();
 
-    int getScore();
+    double getScore();
 }

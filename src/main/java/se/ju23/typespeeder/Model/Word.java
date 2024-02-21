@@ -20,15 +20,18 @@ public class Word {
 
     @Transient
     private WordComplexity complexity;
+    @Transient
+    private boolean isModified;
 
     public Word() {
-
+        this.isModified = false;
     }
 
     public Word(String word) {
         this.word = word;
         this.id = 1;
         this.typedCorrectly  = false;
+        this.isModified = false;
         calculateComplexity();
     }
 
@@ -73,4 +76,12 @@ public class Word {
             default -> {return word;}
             }
         }
+
+    public boolean isModified() {
+        return isModified;
+    }
+
+    public void setModified(boolean modified) {
+        isModified = modified;
+    }
 }

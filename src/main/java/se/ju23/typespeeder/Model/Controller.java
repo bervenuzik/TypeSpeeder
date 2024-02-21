@@ -6,11 +6,11 @@ import org.springframework.stereotype.Component;
 import se.ju23.typespeeder.Repositories.PlayerRepo;
 import se.ju23.typespeeder.Services.*;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
-//todo changing of password and nickname
 //todo messages
 //todo sentence game
 //todo patch message
@@ -32,6 +32,8 @@ public class Controller implements Controllable {
     WordService wordService;
     @Autowired
     ResultsService resultsService;
+    @Autowired
+    SentencesService sentencesService;
     private Optional<Player> currentPlayer;
 
     public Controller(PlayerRepo playerRepo, Menu menu, InputService inputService , ResultsService resultsService) {
@@ -63,6 +65,21 @@ public class Controller implements Controllable {
 
     @Override
     public void start () {
+
+//        ArrayList<String> texts = new ArrayList<>();
+//        texts.add("Red apples hang. Green grass grows. Blue skies shine. Shapes: round, square, triangular.");
+//        texts.add("Foxes dart, bears roam. Squirrels climb, rabbits hop. Forest teems with life.");
+//        texts.add("Earth spins, Mars rusts. Venus gleams, Jupiter looms. Stars twinkle in space.");
+//        texts.add("Winter snows, spring blooms. Summer heats, fall colors. Seasons change, nature thrives.");
+//        texts.add("T-Rex roars, Stegosaurus spikes. Triceratops horns, fossils tell. Dinosaurs ruled, now extinct.");
+//        for (String text: texts) {
+//            ArrayList<String> sentences = new ArrayList<>();
+//            String[] split = text.split("\\.");
+//            for (String sentence : split) {
+//                sentencesService.saveSentence(new Sentence(sentence.trim()+"."));
+//            }
+//        }
+
         String userInput;
         while (true){
             if(currentPlayer.isEmpty()){

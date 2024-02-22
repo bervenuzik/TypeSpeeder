@@ -32,7 +32,7 @@ public class Word {
         this.id = 1;
         this.typedCorrectly  = false;
         this.isModified = false;
-        calculateComplexity();
+        wordSetUp();
     }
 
 
@@ -44,7 +44,7 @@ public class Word {
         this.word = word;
     }
     @PostLoad
-    private void calculateComplexity(){
+    public void wordSetUp(){
         if(word.length() <= GameComplexity.EASY.getMaxWordLength()){
              complexity = WordComplexity.EASY;
         }else if(word.length() <= GameComplexity.MEDIUM.getMaxWordLength()){
@@ -69,6 +69,9 @@ public class Word {
 
     @Override
     public String toString() {
+        if(isModified){
+            return PrintColors.BLUE.getColor() + word + PrintColors.RESET.getColor();
+        }
         switch (complexity){
             case EASY -> {return word;}
             case MEDIUM -> {return PrintColors.YELLOW.getColor() + word + PrintColors.RESET.getColor();}

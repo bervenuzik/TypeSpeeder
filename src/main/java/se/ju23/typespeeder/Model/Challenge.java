@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import se.ju23.typespeeder.Repositories.SentencesRepo;
 import se.ju23.typespeeder.Repositories.WordsRepo;
 import se.ju23.typespeeder.Services.InputService;
+import se.ju23.typespeeder.Services.MenuService;
 import se.ju23.typespeeder.Services.PrintService;
 
 import java.util.*;
@@ -14,37 +15,51 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Component
-public class Game implements Playable {
+public class Challenge implements Playable {
     private GameMode gameMode;
     private GameComplexity complexity;
     @Autowired
-    private WordsRepo wordsRepo;
+    private WordsRepo wordRepo;
     @Autowired
     private PrintService printer;
     @Autowired
     private InputService inputService;
     @Autowired
     private SentencesRepo sentenceRepo;
+    @Autowired
+    MenuService menu;
     private final int WORD_GAME_TIME_SECONDS = 30;
     private  final int SECONDS_CONVERSION = 1_000_000_000;
     private double score;
-    private int countDown;
     private List<String> symbols = "!@#$%^&*()_+{}|:<>?".chars().mapToObj(c -> String.valueOf((char) c)).toList();
+    private Language language;
     private  CountDownLatch latch = new CountDownLatch(1);
 
-    public Game(WordsRepo wordsRepo , PrintService printer , InputService inputService) {
-        this.wordsRepo = wordsRepo;
+    public Challenge(WordsRepo wordService,SentencesRepo sentenceRepo , PrintService printer , InputService inputService, MenuService menu) {
+        this.wordRepo = wordService;
         this.printer = printer;
         this.inputService = inputService;
         this.complexity = GameComplexity.EASY;
         this.gameMode = GameMode.WORDS;
-        this.countDown = 3;
+        this.sentenceRepo = sentenceRepo;
+        this.menu = menu;
     }
 
-    public Game() {
+    public Challenge() {
         complexity = GameComplexity.EASY;
         gameMode = GameMode.SENTENCES;
-        countDown = 3;
+        language = Language.ENGLISH;
+        symbols = language.getSymbols().chars().mapToObj(c -> String.valueOf((char) c)).toList();
+    }
+
+    public Language getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(Language language) {
+        this.language = language;
+        symbols = language.getSymbols().chars().mapToObj(c -> String.valueOf((char) c)).toList();
+
     }
 
     @Override
@@ -71,24 +86,22 @@ public class Game implements Playable {
 
     @Override
     public List<Word> generateWords(int limit ) {
-         return wordsRepo.findRandomWords( complexity.getMinWordLength() , complexity.getMaxWordLength() , limit );
+        List<Word> words = wordRepo.generateRandomWords( complexity.getMinWordLength() , complexity.getMaxWordLength() , limit );
+        makeWordsMoreComplex(words);
+        return words;
     }
 
-    @Override
-    public void changeGameStatus() {
-
-    }
 
     @Override
-    public void startGame() {
+    public void startChallenge() {
         score = 0;
-    switch (gameMode){
-        case WORDS -> startWordGame();
-        case SENTENCES -> startSentencesGame();
-    }
+        switch (gameMode){
+            case WORDS -> startWordChallenge();
+            case SENTENCES -> startSentencesChallenge();
+        }
     }
     @Override
-    public GameMode getGameMode() {
+    public GameMode getChallengeMode() {
         return gameMode;
     }
 
@@ -104,11 +117,10 @@ public class Game implements Playable {
     }
 
     @Override
-    public void startWordGame() {
+    public void startWordChallenge() {
         List<Word> words = generateWords(80);
-        makeWordsMoreComplex(words);
         Thread newThread = new Thread(() -> {
-            wordGame(words);
+            wordChallenge(words);
         });
         // Start the new thread
         newThread.start();
@@ -127,13 +139,12 @@ public class Game implements Playable {
         score = calculateScoreWords(words);
     }
 
-    private void wordGame(List<Word> wordsToType) {
+    private void wordChallenge(List<Word> wordsToType) {
         printer.printWarning("Start typing words!");
         String userInput;
-        Scanner scanner = new Scanner(System.in);
         for (Word word : wordsToType) {
             printer.printMessage(word.toString());
-            userInput = scanner.nextLine();
+            userInput = inputService.getUsersInput();
             if(Thread.currentThread().isInterrupted()){
                 return;
             }
@@ -147,7 +158,7 @@ public class Game implements Playable {
 
 
     @Override
-    public void startSentencesGame() {
+    public void startSentencesChallenge() {
         SentenceComplexity sentenceComplexity;
         switch (complexity){
             case EASY -> sentenceComplexity = SentenceComplexity.EASY;
@@ -155,8 +166,8 @@ public class Game implements Playable {
             case HARD -> sentenceComplexity = SentenceComplexity.HARD;
             default -> sentenceComplexity = SentenceComplexity.EASY;
         }
-        List<Sentence> sentences = sentenceRepo.findSentencesByComplexity(sentenceComplexity);
-        List<Word> wordsToType = prepareSentenceBeforeGame(sentences);
+
+        List<Word> wordsToType = generateSentences(sentenceComplexity);
         startCountDown();
 
         try {
@@ -166,31 +177,26 @@ public class Game implements Playable {
             e.printStackTrace();
         }
 
-        sentenceGame(wordsToType);
+        sentenceChallenge(wordsToType);
 
     }
 
-    private List<Word> prepareSentenceBeforeGame(List<Sentence> sentences){
+    private List<Word> generateSentences(SentenceComplexity sentenceComplexity) {
+        List<Sentence> sentences = sentenceRepo.findSentencesByComplexity(sentenceComplexity);
         Sentence sentence = sentences.get(new Random().nextInt(sentences.size()));
         String sentenceToType = sentence.getSentence();
 
         List<Word> words = new ArrayList<>();
-        for (String word : sentenceToType.split(" ")) {
+        for (String word : sentenceToType.split(" +")) {
             words.add(new Word(word));
         }
         makeWordsMoreComplex(words);
         return words;
     }
 
-    private void sentenceGame(List<Word> wordsToType) {
+    private void sentenceChallenge(List<Word> wordsToType) {
         String userInput;
-        StringBuilder stringBuilder = new StringBuilder();
-        printer.printWarning("Start typing sentence!");
-        String sentenceToType = "" ;
-        for (Word word: wordsToType) {
-            stringBuilder.append(word.getWord() + " ");
-        }
-        printer.printMessage(stringBuilder.toString());
+        printSentence(wordsToType);
         long startTime = System.nanoTime();
         userInput = inputService.getUsersInput();
         long endTime = System.nanoTime();
@@ -199,27 +205,40 @@ public class Game implements Playable {
         calculateScoreSentences(wordsToType, userInput, duration);
     }
 
+    private void printSentence(List<Word> wordsToType){
+        StringBuilder stringBuilder = new StringBuilder();
+        printer.printWarning("Start typing sentence!");
+        for (Word word: wordsToType) {
+            stringBuilder.append(word.getWord() + " ");
+        }
+        printer.printMessage(stringBuilder.toString());
+    }
+
     private void calculateScoreSentences(List<Word> wordsToType, String userInput , long duration){
-        String[] userWords = userInput.split("\s+");
-        int iterator = 0;
+        String[] userWords = userInput.split(" +");
+        int i = 0;
         boolean allRight = true;
-        for (Word word : wordsToType) {
-            if(word.getWord().equals(userWords[iterator])){
-                score += word.getPoints();
-                iterator++;
-                if(word.isModified()){
+        for (String word : userWords) {
+            if(word.equals(wordsToType.get(i).getWord())){
+                score += wordsToType.get(i).getPoints();
+                if(wordsToType.get(i).isModified()){
                     score += 2;
                 }
+                i++;
             }else{
             allRight = false;
             }
         }
-        if(complexity.getTimeBounderies() - duration > 0 && allRight){
-            score += (complexity.getTimeBounderies()  - duration) * 0.1;
-            printer.printMessage("You got extra points for time: " + (complexity.getTimeBounderies()  - duration) * 0.1);
-        }else {
-            score -= (complexity.getTimeBounderies()  - duration) * 0.1;
-            printer.printMessage("You are out of : "+complexity.getTimeBounderies()  +" seconds, tou will get minus " + (complexity.getTimeBounderies()  - duration) * 0.1 + "points");
+        double  timeForBonus = (complexity.getTimeBounderies() - duration) * 0.3;
+        String formatedTime = String.format("%.2f", timeForBonus);
+        formatedTime = formatedTime.replace(",",".");
+        timeForBonus = Double.parseDouble(formatedTime);
+        if(timeForBonus > 0 && allRight){
+            score += timeForBonus;
+            printer.printMessage("You got extra points for time: " + timeForBonus);
+        }else if(timeForBonus < 0) {
+            score -= timeForBonus;
+            printer.printMessage("You are out of : "+complexity.getTimeBounderies()  +" seconds, you will get minus " + timeForBonus + "points");
         }
         if(score < 0){
             score = 0;
@@ -243,23 +262,20 @@ public class Game implements Playable {
         }, 0, 1, TimeUnit.SECONDS);
     }
 
-
     private void showRulesForWords(){
-        printer.printWarning( "==========================================RULES=================================================== \n" +
+        printer.printWarning(      "==========================================RULES=================================================== \n" +
                                         "| The game is simple, you will be given a word and you have to type it as fast as you can. \n" +
                                         "| The faster you type the word, the more points you get. \n" +
                                         "| ***REMEMBER!**** The game will be stopped if you do a mistake! \n" +
-                                        "| Some words will have a spacial color.\n" +
-                                        "| \tWhite words is standard \n" +
-                                        "| \tYellow words give you 2 extra points \n" +
-                                        "| \tRed words give you 5 extra points \n" +
+                                        "| Some words will have a blue color.\n" +
+                                        "| You will get 2 extra point for them.\n" +
                                         "| You will have "+ WORD_GAME_TIME_SECONDS +" seconds to type as many words as you can. \n" +
                                         "| Good luck! \n" +
                                         "==================================================================================================\n" );
     }
 
     private void showRulesForSentences(){
-        printer.printWarning( "==========================================RULES===================================================\n" +
+        printer.printWarning(       "==========================================RULES===================================================\n" +
                                         "| The game is simple, you will be given a sentence and you have to type it as fast as you can. \n" +
                                         "| Good luck! \n" +
                                         "==================================================================================================\n" );
@@ -267,6 +283,9 @@ public class Game implements Playable {
 
     private void makeWordsMoreComplex(List<Word> words){
         Random random = new Random();
+        if(complexity == GameComplexity.EASY){
+            return;
+        }
         for (Word word : words) {
             if(random.nextInt(2) ==1){
                 switch (complexity){
@@ -297,15 +316,14 @@ public class Game implements Playable {
 
     private void changeOneLetterToSymbol(Word word){
         Random random = new Random();
-        int position = random.nextInt(word.getWord().length() -1 ) + 1;
-        char[] lettersFromWord = word.getWord().toCharArray();
-        char randomSymbol = symbols.get(random.nextInt(symbols.size())).charAt(0);
-        lettersFromWord[position] = randomSymbol;
-        word.setWord(String.valueOf(lettersFromWord));
+        int position = random.nextInt(word.getWord().length());
+        char letterToReplace = word.getWord().charAt(position);
+        char randomSymbol = language.getSymbols().toCharArray()[random.nextInt(language.getSymbols().length())];
+        word.setWord(word.getWord().replace(letterToReplace,randomSymbol));
     }
 
 
-    public void changeGameMode() {
+    public void changeChallengeMode() {
         String userInput;
         printer.printMessage("Choose game mode: ");
         showValuesToChoose(GameMode.class);
@@ -322,7 +340,7 @@ public class Game implements Playable {
             default -> printer.printError("Invalid input");
         }
     }
-    public void changeGameComplexity() {
+    public void changeChallengeComplexity() {
         String userInput;
         printer.printMessage("Choose complexity: ");
         showValuesToChoose(GameComplexity.class);
@@ -342,6 +360,36 @@ public class Game implements Playable {
         }
     }
 
+    public void changeLanguage() {
+        String userInput;
+        if(language == Language.ENGLISH){
+            printer.printMessage("Choose language: ");
+        }
+        if(language == Language.SWEDISH){
+            printer.printMessage("Välj språk :");
+        }
+        menu.displayMenu(Language.class);
+        userInput = inputService.getUsersInput();
+        switch (userInput) {
+            case "1" -> {
+                language = Language.ENGLISH;
+                printer.printMessage("English chosen");
+            }
+            case "2" -> {
+                language = Language.SWEDISH;
+                printer.printMessage("Svenska valt");
+            }
+            default -> {
+                if (language == Language.ENGLISH) {
+                    printer.printError("Invalid input");
+                }
+                if (language == Language.SWEDISH) {
+                    printer.printError("Ogiltig inmatning");
+                }
+            }
+        }
+    }
+
     @Override
     public void showScore() {
         printer.printMessage("Your score is: " + score);
@@ -356,6 +404,6 @@ public class Game implements Playable {
 
     @Override
     public String toString() {
-        return "Game.class";
+        return "Challenge.class";
     }
 }

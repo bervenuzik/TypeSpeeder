@@ -12,4 +12,5 @@ public interface PlayerService {
       void changeUsername(Player player);
       void changePassword(Player player);
       void changeNickname(Player player);
+
 }

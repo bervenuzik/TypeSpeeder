@@ -10,5 +10,5 @@ import java.util.List;
 public interface WordsRepo extends JpaRepository<Word , Long>{
 
     @Query(value = "SELECT * FROM words where length(word) between ? and ? ORDER BY RAND() LIMIT ?", nativeQuery = true)
-    List<Word> findRandomWords(int minLenght , int maxLenght , int limit );
+    List<Word> generateRandomWords(int minLenght , int maxLenght , int limit );
 }

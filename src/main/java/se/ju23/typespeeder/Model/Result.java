@@ -35,11 +35,10 @@ public class Result {
     @Override
     public String toString() {
         return "Result{" +
-                "id=" + id +
-                ", player=" + player +
-                ", gameMode=" + gameMode +
-                ", complexity=" + complexity +
-                ", result=" + result +
+                ", player= " + player.getNickname() +
+                ", gameMode= " + gameMode +
+                ", complexity= " + complexity +
+                ", result= " + result +
                 '}';
     }
 }

@@ -1,18 +1,19 @@
 package se.ju23.typespeeder.Model;
 
+import com.sun.source.tree.ConditionalExpressionTree;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import se.ju23.typespeeder.MENU.*;
 import se.ju23.typespeeder.Repositories.PlayerRepo;
+import se.ju23.typespeeder.Repositories.ResultsRepo;
+import se.ju23.typespeeder.Repositories.SentencesRepo;
+import se.ju23.typespeeder.Repositories.WordsRepo;
 import se.ju23.typespeeder.Services.*;
 
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
-//todo messages
-//todo sentence game
 //todo patch message
 @Component
 public class Controller implements Controllable {
@@ -29,18 +30,21 @@ public class Controller implements Controllable {
     @Autowired
     private PrintService printer;
     @Autowired
-    WordService wordService;
+    private WordsRepo wordsRepo;
     @Autowired
-    ResultsService resultsService;
+    private ResultsService resultsService;
     @Autowired
-    SentencesService sentencesService;
+    private SentencesRepo sentencesRepo;
     private Optional<Player> currentPlayer;
+    @Autowired
+    private NewsLetterServise newsLetterServise;
 
-    public Controller(PlayerRepo playerRepo, Menu menu, InputService inputService , ResultsService resultsService) {
+    public Controller(PlayerRepo playerRepo, Menu menu, InputService inputService , ResultsService resultsService, NewsLetterServise newsLetterServise) {
         this.playerRepo = playerRepo;
         this.menu = menu;
         this.inputService = inputService;
         this.resultsService = resultsService;
+        this.newsLetterServise = newsLetterServise;
         currentPlayer = Optional.empty();
     }
 
@@ -66,70 +70,82 @@ public class Controller implements Controllable {
     @Override
     public void start () {
 
-//        ArrayList<String> texts = new ArrayList<>();
-//        texts.add("Red apples hang. Green grass grows. Blue skies shine. Shapes: round, square, triangular.");
-//        texts.add("Foxes dart, bears roam. Squirrels climb, rabbits hop. Forest teems with life.");
-//        texts.add("Earth spins, Mars rusts. Venus gleams, Jupiter looms. Stars twinkle in space.");
-//        texts.add("Winter snows, spring blooms. Summer heats, fall colors. Seasons change, nature thrives.");
-//        texts.add("T-Rex roars, Stegosaurus spikes. Triceratops horns, fossils tell. Dinosaurs ruled, now extinct.");
-//        for (String text: texts) {
-//            ArrayList<String> sentences = new ArrayList<>();
-//            String[] split = text.split("\\.");
-//            for (String sentence : split) {
-//                sentencesService.saveSentence(new Sentence(sentence.trim()+"."));
-//            }
-//        }
-
-        String userInput;
         while (true){
             if(currentPlayer.isEmpty()){
-                menu.displayLoginMenu();
-                userInput = inputService.getUsersInput();
+                menu.displayMenu(LoginMenu.class);
+                LoginMenu userInput = inputService.getUserChoice(LoginMenu.values());
                 switch (userInput){
-                    case "1" -> currentPlayer = playerService.login();
-                    case "2" -> currentPlayer = playerService.regNewPlayer();
-                    case "3" ->System.exit(0);
+                    case LOGIN -> currentPlayer = playerService.login();
+                    case REGISTER -> currentPlayer = playerService.regNewPlayer();
+                    case EXIT ->System.exit(0);
                     default-> printer.printError("Invalid input");
                 }
             }else {
-                System.out.println(currentPlayer.get());
-                menu.displayMenu();
-                userInput = inputService.getUsersInput();
+                menu.displayMenu(MainMenu.class);
+                MainMenu userInput = inputService.getUserChoice(MainMenu.values());
                 switch (userInput){
-                    case "1" -> game.showRules();
-                    case "2" -> game.changeGameMode();
-                    case "3" -> game.changeGameComplexity();
-                    case "4" -> {
-                        game.startGame();
+                    case CHALLANGE_SETTINGS -> challangeSettings();
+                    case START_CHALLANGE -> {
+                        game.startChallenge();
                         game.showScore();
-                        Result result = new Result(currentPlayer.get(), game.getGameMode(), game.getComplexity() ,game.getScore());
-                        System.out.println(result);
-                        resultsService.saveResults(result);
+                        Result result = new Result(currentPlayer.get(), game.getChallengeMode(), game.getComplexity() ,game.getScore());
+                        resultsService.saveResult(result);
+                        printer.printMessage("");
                     }
-                    case "5" -> System.out.println("My results");
-                    case "6" -> System.out.println("Top players");
-                    case "7" -> changeAccount(currentPlayer.get());
-                    case "8" -> currentPlayer = Optional.empty();
-                    case "9" -> System.exit(0);
+                    case SHOW_MY_RESULTS ->resultsService.showMyResults(currentPlayer.get(),game.getChallengeMode(),game.getComplexity());
+                    case SHOW_TOP_10_RESULTS -> System.out.println("Top players");
+                    case SETTINGS -> accountSetttings(currentPlayer.get());
+                    case ADMIN_MENU -> adminMenu();
+                    case LOG_OUT -> currentPlayer = Optional.empty();
+                    case EXIT -> System.exit(0);
                     default-> System.out.println("Invalid input");
                 }
             }
         }
     }
+    private void challangeSettings(){
+        while (true) {
+            menu.displayMenu(ChallengeSettings.class);
+            ChallengeSettings userInput = inputService.getUserChoice(ChallengeSettings.values());
+            switch (userInput) {
+                case SHOW_RULES -> game.showRules();
+                case CHANGE_MODE -> game.changeChallengeMode();
+                case CHANGE_COMPLEXITY -> game.changeChallengeComplexity();
+                case CHANGE_LANGUAGE -> game.changeLanguage();
+                case EXIT -> {return;}
+                default -> printer.printError("Invalid input");
+            }
+        }
 
-    private void changeAccount(Player player) {
-        String userInput;
-        main: while (true){
-            printer.printMenu("1. Change password");
-            printer.printMenu("2. Change nickname");
-            printer.printMenu("3. Change username");
-            printer.printMenu("4. Back");
-            userInput = inputService.getUsersInput();
+    }
+
+    private void adminMenu() {
+        if(currentPlayer.get().getType() == PlayerType.ADMIN) {
+            while(true) {
+                menu.displayMenu(AdminMenu.class);
+                AdminMenu userInput = inputService.getUserChoice(AdminMenu.values());
+                switch (userInput) {
+                    case SEND_NEWLETTER -> newsLetterServise.sendMessage(currentPlayer.get());
+                    case EXIT ->{return;}
+                    default -> printer.printError("Invalid input");
+                }
+            }
+        }else {
+            printer.printError("You are not an admin");
+        }
+    }
+
+    private void accountSetttings(Player player) {
+        SettingsMenu userInput;
+        while (true){
+            menu.displayMenu(SettingsMenu.class);
+            userInput = inputService.getUserChoice(SettingsMenu.values());
             switch (userInput){
-                case "1" -> playerService.changePassword(player);
-                case "2" -> playerService.changeNickname(player);
-                case "3" -> playerService.changeUsername(player);
-                case "4" -> {break main;}
+                case CHANGE_PASSWORD -> playerService.changePassword(player);
+                case CHANGE_NICKNAME -> playerService.changeNickname(player);
+                case CHANGE_USERNAME -> playerService.changeUsername(player);
+                case OPEN_MESSAGES -> newsLetterServise.openMesseges();
+                case BACK -> {return;}
                 default -> printer.printError("Invalid input");
             }
         }

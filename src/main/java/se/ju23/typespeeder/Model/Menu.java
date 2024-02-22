@@ -1,53 +1,45 @@
 package se.ju23.typespeeder.Model;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import se.ju23.typespeeder.MENU.MainMenu;
+import se.ju23.typespeeder.MENU.MenuOption;
 import se.ju23.typespeeder.Services.MenuService;
 import se.ju23.typespeeder.PrintColors;
+import se.ju23.typespeeder.Services.PrintService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
 public class Menu implements MenuService {
-   private final List<String> options= new ArrayList<>();
+    @Autowired
+    private PrintService printer;
+
+    public Menu(PrintService printer) {
+        this.printer = printer;
+    }
+
     public Menu(){
-        options.add("Show rules");
-        options.add("Change mode");
-        options.add("Change complexity");
-        options.add("Start Game");
-        options.add("My results");
-        options.add("Top players");
-        options.add("Account settings");
-        options.add("Log out");
-        options.add("Exit");
     }
 
     @Override
-    public List<String> displayMenu() {
-        System.out.print(PrintColors.GREEN.getColor());
-
-
-        for (int i = 0; i < options.size(); i++) {
-            String option = options.get(i);
-            System.out.println(i+1 + " " + options.get(i));
+    public <T extends Enum & MenuOption > List<String> displayMenu(Class<T> menu) {
+        T [] options = menu.getEnumConstants();
+        for (int i = 0; i < options.length; i++) {
+            printer.printMenu(i+1 + ". "+options[i].getOption());
         }
-        System.out.print(PrintColors.RESET.getColor());
-        return getMenuOptions();
-
-    }
-
-    public void displayLoginMenu(){
-        System.out.print(PrintColors.GREEN.getColor());
-        System.out.println("=====================Welcome to TypeSpeeder!=====================");
-        System.out.println("1. Log in");
-        System.out.println("2. Register");
-        System.out.println("3. Exit");
-        System.out.println("=================================================================");
-        System.out.print(PrintColors.RESET.getColor());
+        return List.of(Arrays.stream(menu.getEnumConstants()).map(MenuOption::getOption).toArray(String[]::new));
     }
 
     @Override
     public List<String> getMenuOptions() {
-        return options;
+        MainMenu[] options = MainMenu.values();
+        List<String> optionsList = new ArrayList<>();
+        for (MainMenu option : options) {
+            optionsList.add(option.getOption());
+        }
+        return optionsList;
     }
 }

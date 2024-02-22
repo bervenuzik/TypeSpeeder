@@ -1,5 +1,7 @@
 package se.ju23.typespeeder.Services;
 
+import java.util.Scanner;
+
 public interface PrintService {
     void printError(String text);
 

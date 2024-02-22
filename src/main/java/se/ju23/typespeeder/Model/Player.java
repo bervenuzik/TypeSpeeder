@@ -70,6 +70,10 @@ public class Player {
 //                '}';
 //    }
 
+    public PlayerType getType() {
+        return type;
+    }
+
     @Override
     public String toString() {
         return "Player{" +

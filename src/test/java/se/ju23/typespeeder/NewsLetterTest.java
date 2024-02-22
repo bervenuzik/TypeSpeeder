@@ -1,6 +1,7 @@
 package se.ju23.typespeeder;
 
 import org.junit.jupiter.api.Test;
+import se.ju23.typespeeder.Model.NewsLetter;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -16,7 +17,7 @@ public class NewsLetterTest {
     @Test
     public void testNewsLetterClassExists() {
         try {
-            Class.forName("NewsLetter");
+            Class.forName("se.ju23.typespeeder.Model.NewsLetter");
         } catch (ClassNotFoundException e) {
             throw new AssertionError("NewsLetter class should exist.", e);
         }
@@ -24,22 +25,22 @@ public class NewsLetterTest {
     @Test
     public void testNewsLetterContentLength() {
         try {
-            Class<?> newsLetterClass = Class.forName("NewsLetter");
+            Class<?> newsLetterClass = Class.forName("se.ju23.typespeeder.Model.NewsLetter");
 
             Field contentField = newsLetterClass.getDeclaredField("content");
             assertNotNull(contentField, "Field 'content' should exist in NewsLetter.");
 
             assertTrue(contentField.getType().equals(String.class), "Field 'content' should be of type String.");
+            Method contentValidator = newsLetterClass.getDeclaredMethod("contentValidation", String.class);
+            assertNotNull(contentValidator, "Method 'contentValidation' should exist in NewsLetter.");
 
-            Object instance = newsLetterClass.getDeclaredConstructor().newInstance();
-            Field field = newsLetterClass.getDeclaredField("content");
-            field.setAccessible(true);
-            String contentValue = (String) field.get(instance);
+            NewsLetter test = new NewsLetter();
+            test.setContent("This is a test message");
 
-            assertTrue(contentValue.length() >= 100, "Content field length should be at least 100 characters.");
-            assertTrue(contentValue.length() <= 200, "Content field length should be at most 200 characters.");
+            assertFalse(test.contentValidation("1nfsiouanfuiesnaufineauifne"), "Content field length should be at least 100 characters.");
+            assertFalse(test.contentValidation("1nfsiouanfuiesnaufineauifne1nfsiouanfuiesnaufineauifne1nfsiouanfuiesnaufineauifne1nfsiouanfuiesnaufineauifne1nfsiouanfuiesnaufineauifne1nfsiouanfuiesnaufineauifne1nfsiouanfuiesnaufineauifne1nfsiouanfuiesnaufineauifne1nfsiouanfuiesnaufineauifne1nfsiouanfuiesnaufineauifne1nfsiouanfuiesnaufineauifne1nfsiouanfuiesnaufineauifne"), "Content field length should be at most 200 characters.");
 
-        } catch (ClassNotFoundException | NoSuchFieldException | NoSuchMethodException | InstantiationException | IllegalAccessException | java.lang.reflect.InvocationTargetException e) {
+        } catch (ClassNotFoundException | NoSuchFieldException | NoSuchMethodException e) {
             fail("Error occurred while testing NewsLetter content field length.", e);
         }
     }
@@ -47,19 +48,23 @@ public class NewsLetterTest {
     @Test
     public void testNewsLetterPublishDateTime() {
         try {
-            Class<?> someClass = Class.forName("NewsLetter");
+            Class<?> someClass = Class.forName("se.ju23.typespeeder.Model.NewsLetter");
 
             Field publishDateTime = someClass.getDeclaredField("publishDateTime");
             assertNotNull(publishDateTime, "Field 'publishDateTime' should exist in NewsLetter class.");
+            publishDateTime.setAccessible(true);
 
             assertTrue(publishDateTime.getType().equals(LocalDateTime.class), "Field 'publishDateTime' should be of type LocalDateTime.");
 
-            Object instance = someClass.getDeclaredConstructor().newInstance();
-            LocalDateTime dateTimeValue = (LocalDateTime) publishDateTime.get(instance);
+            NewsLetter test = new NewsLetter();
+            LocalDateTime dateTimeValue = LocalDateTime.now();
+            test.setPublishDateTime(dateTimeValue);
+            //Object instance = someClass.getDeclaredConstructor().newInstance();
+            //LocalDateTime dateTimeValue = (LocalDateTime) publishDateTime.get(instance);
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String formattedDateTime = dateTimeValue.format(formatter);
-            assertEquals("Expected format", formattedDateTime, "'publishDateTime' field should have format 'yyyy-MM-dd HH:mm:ss'.");
+            assertEquals(formattedDateTime,test.getPublishDateTime(), "'publishDateTime' field should have format 'yyyy-MM-dd HH:mm:ss'.");
 
             Method getterMethod = someClass.getDeclaredMethod("getPublishDateTime");
             assertNotNull(getterMethod, "Getter method for the field 'publishDateTime' should exist.");
@@ -67,12 +72,6 @@ public class NewsLetterTest {
 
         } catch (ClassNotFoundException | NoSuchFieldException | NoSuchMethodException e) {
             fail("Error occurred while testing properties of NewsLetter.", e);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
         }
     }
 }

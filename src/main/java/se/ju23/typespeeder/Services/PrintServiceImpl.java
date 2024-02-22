@@ -2,6 +2,7 @@ package se.ju23.typespeeder.Services;
 
 import org.springframework.stereotype.Component;
 
+import java.io.PrintStream;
 import java.util.Scanner;
 
 @Component
@@ -20,9 +21,11 @@ public class PrintServiceImpl implements PrintService {
         private  final String ANSI_WHITE = "\u001B[37m";
         private Scanner input = new Scanner(System.in);
 
+
     public PrintServiceImpl() {
 
     }
+
 
     @Override
     public void printError(String text){

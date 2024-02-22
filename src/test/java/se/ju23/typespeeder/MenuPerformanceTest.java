@@ -1,6 +1,7 @@
 package se.ju23.typespeeder;
 
 import org.junit.jupiter.api.Test;
+import se.ju23.typespeeder.MENU.MainMenu;
 import se.ju23.typespeeder.Model.Menu;
 
 import java.io.ByteArrayInputStream;
@@ -20,7 +21,7 @@ public class MenuPerformanceTest {
     public void testGetMenuOptionsExecutionTime() {
         long startTime = System.nanoTime();
         Menu menu = new Menu();
-        menu.getMenuOptions();
+        menu.displayMenu(MainMenu.class);
         long endTime = System.nanoTime();
 
         long duration = (endTime - startTime) / MILLISECONDS_CONVERSION;
@@ -40,7 +41,7 @@ public class MenuPerformanceTest {
         long startTime = System.nanoTime();
 
         Menu menu = new Menu();
-        menu.displayMenu();
+        menu.displayMenu(MainMenu.class);
 
         long endTime = System.nanoTime();
         long duration = (endTime - startTime) / MILLISECONDS_CONVERSION;

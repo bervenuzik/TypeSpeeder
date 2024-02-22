@@ -1,6 +1,5 @@
 package se.ju23.typespeeder.Model;
 
-import java.util.Date;
 import java.util.List;
 
 public interface Playable {
@@ -8,18 +7,19 @@ public interface Playable {
 
     List<Word> generateWords(int limit);
 
-    void changeGameStatus();
-    void startGame();
+    void startChallenge();
 
-    void startWordGame();
+    void startWordChallenge();
 
-    void startSentencesGame();
+    void startSentencesChallenge();
 
-    void changeGameMode();
-    void changeGameComplexity();
+    void changeChallengeMode();
+    void changeChallengeComplexity();
     void showScore();
     GameComplexity getComplexity();
-    GameMode getGameMode();
+    GameMode getChallengeMode();
 
     double getScore();
+
+    void changeLanguage();
 }

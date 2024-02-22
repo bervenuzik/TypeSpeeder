@@ -1,11 +1,9 @@
 package se.ju23.typespeeder.Model;
 
-import com.sun.source.tree.ConditionalExpressionTree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.ju23.typespeeder.MENU.*;
 import se.ju23.typespeeder.Repositories.PlayerRepo;
-import se.ju23.typespeeder.Repositories.ResultsRepo;
 import se.ju23.typespeeder.Repositories.SentencesRepo;
 import se.ju23.typespeeder.Repositories.WordsRepo;
 import se.ju23.typespeeder.Services.*;
@@ -38,14 +36,17 @@ public class Controller implements Controllable {
     private Optional<Player> currentPlayer;
     @Autowired
     private NewsLetterServise newsLetterServise;
+    @Autowired
+    Patch patch;
 
-    public Controller(PlayerRepo playerRepo, Menu menu, InputService inputService , ResultsService resultsService, NewsLetterServise newsLetterServise) {
+    public Controller(PlayerRepo playerRepo, Menu menu, InputService inputService , ResultsService resultsService, NewsLetterServise newsLetterServise, Patch patch) {
         this.playerRepo = playerRepo;
         this.menu = menu;
         this.inputService = inputService;
         this.resultsService = resultsService;
         this.newsLetterServise = newsLetterServise;
         currentPlayer = Optional.empty();
+        this.patch = patch;
     }
 
     public Controller() {
@@ -69,39 +70,40 @@ public class Controller implements Controllable {
 
     @Override
     public void start () {
+        patch.getLatestUpdate();
 
-        while (true){
-            if(currentPlayer.isEmpty()){
-                menu.displayMenu(LoginMenu.class);
-                LoginMenu userInput = inputService.getUserChoice(LoginMenu.values());
-                switch (userInput){
-                    case LOGIN -> currentPlayer = playerService.login();
-                    case REGISTER -> currentPlayer = playerService.regNewPlayer();
-                    case EXIT ->System.exit(0);
-                    default-> printer.printError("Invalid input");
-                }
-            }else {
-                menu.displayMenu(MainMenu.class);
-                MainMenu userInput = inputService.getUserChoice(MainMenu.values());
-                switch (userInput){
-                    case CHALLANGE_SETTINGS -> challangeSettings();
-                    case START_CHALLANGE -> {
-                        game.startChallenge();
-                        game.showScore();
-                        Result result = new Result(currentPlayer.get(), game.getChallengeMode(), game.getComplexity() ,game.getScore());
-                        resultsService.saveResult(result);
-                        printer.printMessage("");
-                    }
-                    case SHOW_MY_RESULTS ->resultsService.showMyResults(currentPlayer.get(),game.getChallengeMode(),game.getComplexity());
-                    case SHOW_TOP_10_RESULTS -> System.out.println("Top players");
-                    case SETTINGS -> accountSetttings(currentPlayer.get());
-                    case ADMIN_MENU -> adminMenu();
-                    case LOG_OUT -> currentPlayer = Optional.empty();
-                    case EXIT -> System.exit(0);
-                    default-> System.out.println("Invalid input");
-                }
-            }
-        }
+//        while (true){
+//            if(currentPlayer.isEmpty()){
+//                menu.displayMenu(LoginMenu.class);
+//                LoginMenu userInput = inputService.getUserChoice(LoginMenu.values());
+//                switch (userInput){
+//                    case LOGIN -> currentPlayer = playerService.login();
+//                    case REGISTER -> currentPlayer = playerService.regNewPlayer();
+//                    case EXIT ->System.exit(0);
+//                    default-> printer.printError("Invalid input");
+//                }
+//            }else {
+//                menu.displayMenu(MainMenu.class);
+//                MainMenu userInput = inputService.getUserChoice(MainMenu.values());
+//                switch (userInput){
+//                    case CHALLANGE_SETTINGS -> challangeSettings();
+//                    case START_CHALLANGE -> {
+//                        game.startChallenge();
+//                        game.showScore();
+//                        Result result = new Result(currentPlayer.get(), game.getChallengeMode(), game.getComplexity() ,game.getScore());
+//                        resultsService.saveResult(result);
+//                        printer.printMessage("");
+//                    }
+//                    case SHOW_MY_RESULTS ->resultsService.showMyResults(currentPlayer.get(),game.getChallengeMode(),game.getComplexity());
+//                    case SHOW_TOP_10_RESULTS -> System.out.println("Top players");
+//                    case SETTINGS -> accountSetttings(currentPlayer.get());
+//                    case ADMIN_MENU -> adminMenu();
+//                    case LOG_OUT -> currentPlayer = Optional.empty();
+//                    case EXIT -> System.exit(0);
+//                    default-> System.out.println("Invalid input");
+//                }
+//            }
+//        }
     }
     private void challangeSettings(){
         while (true) {

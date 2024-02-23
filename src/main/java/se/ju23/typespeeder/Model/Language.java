@@ -4,7 +4,7 @@ import se.ju23.typespeeder.MENU.MenuOption;
 
 public enum Language  implements MenuOption {
     ENGLISH( "English","\"!@#$%^&*()_+{}|:<>?\""),
-    SWEDISH( "Swedish" , "\"!äåö@#$%^&*()_+{}|:<>?\"");
+    SWEDISH( "Svenska" , "\"!äåö@#$%^&*()_+{}|:<>?\"");
 
     private String option;
     private String symbols;

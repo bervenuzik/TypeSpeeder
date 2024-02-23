@@ -39,10 +39,12 @@ public class Challenge implements Playable {
         this.wordRepo = wordService;
         this.printer = printer;
         this.inputService = inputService;
-        this.complexity = GameComplexity.EASY;
-        this.gameMode = GameMode.WORDS;
         this.sentenceRepo = sentenceRepo;
         this.menu = menu;
+        this.complexity = GameComplexity.EASY;
+        this.gameMode = GameMode.WORDS;
+        this.language = Language.ENGLISH;
+        symbols = language.getSymbols().chars().mapToObj(c -> String.valueOf((char) c)).toList();
     }
 
     public Challenge() {
@@ -361,7 +363,7 @@ public class Challenge implements Playable {
     }
 
     public void changeLanguage() {
-        String userInput;
+        Language userInput;
         if(language == Language.ENGLISH){
             printer.printMessage("Choose language: ");
         }
@@ -369,15 +371,15 @@ public class Challenge implements Playable {
             printer.printMessage("Välj språk :");
         }
         menu.displayMenu(Language.class);
-        userInput = inputService.getUsersInput();
+        userInput = inputService.getUserChoice(Language.values());
         switch (userInput) {
-            case "1" -> {
+            case ENGLISH -> {
                 language = Language.ENGLISH;
-                printer.printMessage("English chosen");
+                printer.printMessage("English chosen.");
             }
-            case "2" -> {
+            case SWEDISH -> {
                 language = Language.SWEDISH;
-                printer.printMessage("Svenska valt");
+                printer.printMessage("Svenska valt.");
             }
             default -> {
                 if (language == Language.ENGLISH) {

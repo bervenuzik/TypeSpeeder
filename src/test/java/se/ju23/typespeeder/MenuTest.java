@@ -12,24 +12,21 @@ import java.io.PrintStream;
 import java.util.List;
 import org.mockito.Mockito;
 import se.ju23.typespeeder.MENU.MainMenu;
+import se.ju23.typespeeder.MENU.MenuOption;
 import se.ju23.typespeeder.Model.Language;
 import se.ju23.typespeeder.Model.Menu;
 import se.ju23.typespeeder.Services.MenuService;
 import se.ju23.typespeeder.Services.PrintService;
+import se.ju23.typespeeder.Services.PrintServiceImpl;
 
 import static org.mockito.Mockito.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MenuTest {
-    /*
-    Visa teste som controlerar output av consolen funkar inte. Jag vet inte än varför.
-    Förmodligen de scannar olicka streams
-     */
-
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final PrintStream originalOut = System.out;
-    private final  PrintService printer = spy(PrintService.class);
+    private final  PrintService printer = spy(PrintServiceImpl.class);
     private Menu menu;
 
     @BeforeEach
@@ -57,7 +54,7 @@ public class MenuTest {
     public void testMethodExists() {
         try {
             Class<?> clazz = Class.forName("se.ju23.typespeeder.Model.Menu");
-            Method method = clazz.getMethod("displayMenu");
+            Method method = clazz.getMethod("displayMenu",Class .class);
             assertNotNull(method, "The method 'displayMenu()' should exist in the class 'Menu'.");
         } catch (ClassNotFoundException e) {
             fail("The class 'Menu' does not exist.", e);
@@ -120,12 +117,6 @@ public class MenuTest {
         String consoleOutput = outContent.toString();
         assertTrue(consoleOutput.contains("Svenska"), "Menu should prompt for language selection.");
         assertTrue(consoleOutput.contains("English"), "Menu should prompt for language selection.");
-        /*Jag ändrade denna testen för att den functionen har ingentin att göra med Meny classen.
-        den metoden måste testas in testerna för Challenge class.
-        Meny class (eller MenuService) har ingenting att göra med språk val.
-        Den jobbar bara med menyer och skriver ut dem.
-         */
-
     }
 
 

@@ -14,11 +14,14 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 @Component
 public class Patch {
     private String currentVersion = "1.0.0";
     private String latestVersion;
+    private LocalDateTime realeaseDateTime;
     @Autowired
     private PrintService printer;
 
@@ -32,6 +35,8 @@ public class Patch {
     public  void getLatestUpdate(){
         Gson gson = new Gson();
         HashMap<String,String> map = new HashMap<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
         String owner = "bervenuzik";
         String repo = "TypeSpeeder";
 
@@ -76,12 +81,27 @@ public class Patch {
         }
         map = gson.fromJson(response.toString(), map.getClass());
         latestVersion = map.get("tag_name");
-        if(isUpdateAvailable()) printer.printWarning("New version available: " + latestVersion);
-        else printer.printSuccess("You are using the latest version: " + currentVersion);
+        if(isUpdateAvailable()) {
+            printer.printWarning("New version available: " + latestVersion);
+        } else {
+            printer.printSuccess("You are using the latest version: " + currentVersion);
+        }
+        realeaseDateTime = LocalDateTime.parse(map.get("published_at") , formatter);;
         System.out.println(response);
     }
     private boolean isUpdateAvailable() {
         return !latestVersion.equals(currentVersion);
+    }
+
+    public LocalDateTime getRealeaseDateTime() {
+        return realeaseDateTime;
+    }
+
+    public void setRealeaseDateTime(LocalDateTime realeaseDateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        System.out.println(formatter.format(realeaseDateTime));
+        this.realeaseDateTime = LocalDateTime.parse(formatter.format(realeaseDateTime));
+        System.out.println(this.realeaseDateTime.toString());
     }
 }
 

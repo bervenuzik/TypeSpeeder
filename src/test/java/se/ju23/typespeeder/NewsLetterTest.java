@@ -59,8 +59,6 @@ public class NewsLetterTest {
             NewsLetter test = new NewsLetter();
             LocalDateTime dateTimeValue = LocalDateTime.now();
             test.setPublishDateTime(dateTimeValue);
-            //Object instance = someClass.getDeclaredConstructor().newInstance();
-            //LocalDateTime dateTimeValue = (LocalDateTime) publishDateTime.get(instance);
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String formattedDateTime = dateTimeValue.format(formatter);
@@ -68,7 +66,6 @@ public class NewsLetterTest {
 
             Method getterMethod = someClass.getDeclaredMethod("getPublishDateTime");
             assertNotNull(getterMethod, "Getter method for the field 'publishDateTime' should exist.");
-
 
         } catch (ClassNotFoundException | NoSuchFieldException | NoSuchMethodException e) {
             fail("Error occurred while testing properties of NewsLetter.", e);

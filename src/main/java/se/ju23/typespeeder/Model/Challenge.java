@@ -31,7 +31,7 @@ public class Challenge implements Playable {
     private final int WORD_GAME_TIME_SECONDS = 30;
     private  final int SECONDS_CONVERSION = 1_000_000_000;
     private double score;
-    private List<String> symbols = "!@#$%^&*()_+{}|:<>?".chars().mapToObj(c -> String.valueOf((char) c)).toList();
+
     private Language language;
     private  CountDownLatch latch = new CountDownLatch(1);
 
@@ -44,14 +44,12 @@ public class Challenge implements Playable {
         this.complexity = GameComplexity.EASY;
         this.gameMode = GameMode.WORDS;
         this.language = Language.ENGLISH;
-        symbols = language.getSymbols().chars().mapToObj(c -> String.valueOf((char) c)).toList();
     }
 
     public Challenge() {
         complexity = GameComplexity.EASY;
         gameMode = GameMode.SENTENCES;
         language = Language.ENGLISH;
-        symbols = language.getSymbols().chars().mapToObj(c -> String.valueOf((char) c)).toList();
     }
 
     public Language getLanguage() {
@@ -60,7 +58,6 @@ public class Challenge implements Playable {
 
     public void setLanguage(Language language) {
         this.language = language;
-        symbols = language.getSymbols().chars().mapToObj(c -> String.valueOf((char) c)).toList();
 
     }
 

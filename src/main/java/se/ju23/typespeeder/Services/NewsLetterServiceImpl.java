@@ -56,7 +56,7 @@ public class NewsLetterServiceImpl implements NewsLetterServise {
         printer.printMessage("========================================================================");
         for (NewsLetter newsLetter : newsLetters) {
             printer.printMessage(newsLetter.getContent());
-            printer.printMessage("From: " + newsLetter.getAuthor().getNickname() + " published" + newsLetter.getPublishDateTime());
+            printer.printMessage("From: " + newsLetter.getAuthor().getNickname() + " published" + newsLetter.getPublishDateTime() + "\n");
         }
 
         printer.printMessage("========================================================================");

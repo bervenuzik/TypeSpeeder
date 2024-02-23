@@ -27,6 +27,7 @@ public class Result {
         this.result = result;
         this.complexity = complexity;
         this.gameMode = gameMode;
+        id = 1;
     }
 
     public Result() {
@@ -34,11 +35,6 @@ public class Result {
 
     @Override
     public String toString() {
-        return "Result{" +
-                ", player= " + player.getNickname() +
-                ", gameMode= " + gameMode +
-                ", complexity= " + complexity +
-                ", result= " + result +
-                '}';
+        return String.format("player= %-15s gameMode= %-12s complexity= %-12s result= %-12.2f", player.getNickname(), gameMode, complexity, result);
     }
 }

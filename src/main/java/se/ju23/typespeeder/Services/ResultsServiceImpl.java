@@ -11,18 +11,18 @@ import se.ju23.typespeeder.Repositories.ResultsRepo;
 import java.util.List;
 
 @Component
-public class ResultServiceImpl  implements ResultsService{
+public class ResultsServiceImpl implements ResultsService{
     @Autowired
     private ResultsRepo resultRepo;
     @Autowired
     private PrintService printer;
 
-    public ResultServiceImpl(ResultsRepo resultRepo, PrintService printer) {
+    public ResultsServiceImpl(ResultsRepo resultRepo, PrintService printer) {
         this.printer = printer;
         this.resultRepo = resultRepo;
     }
 
-    public ResultServiceImpl() {
+    public ResultsServiceImpl() {
     }
 
         @Override
@@ -32,7 +32,7 @@ public class ResultServiceImpl  implements ResultsService{
 
         @Override
     public void showMyResults(Player player  , GameMode gameMode, GameComplexity complexity){
-        List<Result> results= resultRepo.findResultsByPlayerAndGameModeAndComplexity(player , gameMode , complexity);
+        List<Result> results= resultRepo.findResultsByPlayerAndGameModeAndComplexity(player , gameMode , complexity).subList(0,10);
         for (Result result : results) {
             printer.printMessage(result.toString());
         }
@@ -40,11 +40,13 @@ public class ResultServiceImpl  implements ResultsService{
 
     @Override
     public void showTop10Players(GameMode gameMode, GameComplexity complexity) {
-        List<Result> results = resultRepo.findTop10ByGameModeAndComplexity(gameMode , complexity);
-        printer.printMessage(results.toString());
+        List<Result> results = resultRepo.findBestPlayersByGameModeAndComplexityOrderByResultDesc(gameMode , complexity).subList(0,10);
         for (Result result : results) {
             printer.printMessage(result.toString());
         }
+
     }
+
+
 }
 

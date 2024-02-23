@@ -27,6 +27,7 @@ public class Player {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
+        this.type = PlayerType.USER;
     }
     public Player() {
     }
@@ -63,12 +64,6 @@ public class Player {
         this.nickname = nickname;
     }
 
-//    @Override
-//    public String toString() {
-//        return "Player{" +
-//                "nickname='" + nickname + '\'' +
-//                '}';
-//    }
 
     public PlayerType getType() {
         return type;

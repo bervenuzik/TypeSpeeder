@@ -82,7 +82,7 @@ public class PlayerServiceImpl implements PlayerService {
             return false;
         }
         if (userName.length() < 8) {
-            System.out.println("username can't be less than 3 characters.");
+            System.out.println("username can't be less than 8 characters.");
             return false;
         }
         if (userName.length() > 20) {
@@ -127,26 +127,37 @@ public class PlayerServiceImpl implements PlayerService {
         Optional<Player> playerByNickname;
 
         while (true) {
-
-            username = takeInUserName();
-            if (!userNameValidator(username)) {
-                printer.printError("Wrong format of Username, try again");
-                if(!printer.tryAgain()) return Optional.empty();
-                continue;
+            while (true) {
+                username = takeInUserName();
+                if (!userNameValidator(username)) {
+                    printer.printError("Wrong format of Username, try again");
+                    if (!printer.tryAgain()) return Optional.empty();
+                    continue;
+                }else{
+                    break;
+                }
             }
 
-            password = takeInPassword();
-            if (!passwordValidator(password)) {
-                printer.printError("Wrong format of password, try again");
-                if(!printer.tryAgain()) return Optional.empty();
-                continue;
+            while (true) {
+                password = takeInPassword();
+                if (!passwordValidator(password)) {
+                    printer.printError("Wrong format of password, try again");
+                    if(!printer.tryAgain()) return Optional.empty();
+                    continue;
+                }else{
+                    break;
+                }
             }
 
-            nickname = takeInNickname();
-            if (!nicknameValidator(nickname)) {
-                printer.printError("Wrong format of nickname, try again");
-                if(!printer.tryAgain()) return Optional.empty();
-                continue;
+            while (true) {
+                nickname = takeInNickname();
+                if (!nicknameValidator(nickname)) {
+                    printer.printError("Wrong format of nickname, try again");
+                    if(!printer.tryAgain()) return Optional.empty();
+                    continue;
+                }else {
+                    break;
+                }
             }
 
             playerByUserName = playerRepo.findPlayerByUsername(username);
@@ -169,6 +180,7 @@ public class PlayerServiceImpl implements PlayerService {
         }
 
     }
+
 
     private boolean nicknameValidator(String nickname) {
         if(nickname.isEmpty()){
@@ -271,7 +283,6 @@ public class PlayerServiceImpl implements PlayerService {
         }
 
     }
-
 
     private String takeInNickname() {
         String  nickname;

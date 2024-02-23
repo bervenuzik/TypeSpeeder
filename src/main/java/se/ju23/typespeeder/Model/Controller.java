@@ -73,17 +73,17 @@ public class Controller implements Controllable {
     public void start () {
         patch.getLatestUpdate();
 
-//        while (true){
-//            if(currentPlayer.isEmpty()){
-//                menu.displayMenu(LoginMenu.class);
-//                LoginMenu userInput = inputService.getUserChoice(LoginMenu.values());
-//                switch (userInput){
-//                    case LOGIN -> currentPlayer = playerService.login();
-//                    case REGISTER -> currentPlayer = playerService.regNewPlayer();
-//                    case EXIT ->System.exit(0);
-//                    default-> printer.printError("Invalid input");
-//                }
-//            }else {
+        while (true){
+            if(currentPlayer.isEmpty()){
+                menu.displayMenu(LoginMenu.class);
+                LoginMenu userInput = inputService.getUserChoice(LoginMenu.values());
+                switch (userInput){
+                    case LOGIN -> currentPlayer = playerService.login();
+                    case REGISTER -> currentPlayer = playerService.regNewPlayer();
+                    case EXIT ->System.exit(0);
+                    default-> printer.printError("Invalid input");
+                }
+            }else {
                 menu.displayMenu(MainMenu.class);
                 MainMenu userInput = inputService.getUserChoice(MainMenu.values());
                 switch (userInput){
@@ -102,9 +102,9 @@ public class Controller implements Controllable {
                     case LOG_OUT -> currentPlayer = Optional.empty();
                     case EXIT -> System.exit(0);
                     default-> System.out.println("Invalid input");
-                //}
+                }
             }
-       // }
+        }
     }
     private void challangeSettings(){
         while (true) {

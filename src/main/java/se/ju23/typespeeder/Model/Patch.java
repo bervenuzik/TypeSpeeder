@@ -44,40 +44,40 @@ public class Patch {
         try {
             url = new URL("https://api.github.com/repos/" + owner + "/" + repo + "/releases/latest");
         } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            printer.printError("Error occurred while trying to get the latest version. Wrong URL format");
         }
         HttpURLConnection conn = null;
         try {
             conn = (HttpURLConnection) url.openConnection();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            printer.printError("Error occurred while trying to get the latest version. Connection error");
         }
         try {
             conn.setRequestMethod("GET");
         } catch (ProtocolException e) {
-            throw new RuntimeException(e);
+            printer.printError("Error occurred while trying to get the latest version. GET request error");
         }
 
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            printer.printError("Error occurred while trying to get the latest version. Error while reading the response");
         }
-        String line;
+        String line ="";
         StringBuilder response = new StringBuilder();
         while (true) {
             try {
                 if (!((line = reader.readLine()) != null)) break;
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                printer.printError("Error occurred while trying to get the latest version. Error while reading the response");
             }
             response.append(line);
         }
         try {
             reader.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            printer.printError("Error occurred while trying to get the latest version. Error while closing the reader");
         }
         map = gson.fromJson(response.toString(), map.getClass());
         latestVersion = map.get("tag_name");
@@ -86,8 +86,8 @@ public class Patch {
         } else {
             printer.printSuccess("You are using the latest version: " + currentVersion);
         }
-        realeaseDateTime = LocalDateTime.parse(map.get("published_at") , formatter);;
-        System.out.println(response);
+        String date = map.get("published_at");
+        if(date != null) realeaseDateTime = LocalDateTime.parse(date.substring(0,date.length()-1),formatter);
     }
     private boolean isUpdateAvailable() {
         return !latestVersion.equals(currentVersion);

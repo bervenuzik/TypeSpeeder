@@ -72,38 +72,38 @@ public class Controller implements Controllable {
     public void start () {
         patch.getLatestUpdate();
 
-//        while (true){
-//            if(currentPlayer.isEmpty()){
-//                menu.displayMenu(LoginMenu.class);
-//                LoginMenu userInput = inputService.getUserChoice(LoginMenu.values());
-//                switch (userInput){
-//                    case LOGIN -> currentPlayer = playerService.login();
-//                    case REGISTER -> currentPlayer = playerService.regNewPlayer();
-//                    case EXIT ->System.exit(0);
-//                    default-> printer.printError("Invalid input");
-//                }
-//            }else {
-//                menu.displayMenu(MainMenu.class);
-//                MainMenu userInput = inputService.getUserChoice(MainMenu.values());
-//                switch (userInput){
-//                    case CHALLANGE_SETTINGS -> challangeSettings();
-//                    case START_CHALLANGE -> {
-//                        game.startChallenge();
-//                        game.showScore();
-//                        Result result = new Result(currentPlayer.get(), game.getChallengeMode(), game.getComplexity() ,game.getScore());
-//                        resultsService.saveResult(result);
-//                        printer.printMessage("");
-//                    }
-//                    case SHOW_MY_RESULTS ->resultsService.showMyResults(currentPlayer.get(),game.getChallengeMode(),game.getComplexity());
-//                    case SHOW_TOP_10_RESULTS -> System.out.println("Top players");
-//                    case SETTINGS -> accountSetttings(currentPlayer.get());
-//                    case ADMIN_MENU -> adminMenu();
-//                    case LOG_OUT -> currentPlayer = Optional.empty();
-//                    case EXIT -> System.exit(0);
-//                    default-> System.out.println("Invalid input");
-//                }
-//            }
-//        }
+        while (true){
+            if(currentPlayer.isEmpty()){
+                menu.displayMenu(LoginMenu.class);
+                LoginMenu userInput = inputService.getUserChoice(LoginMenu.values());
+                switch (userInput){
+                    case LOGIN -> currentPlayer = playerService.login();
+                    case REGISTER -> currentPlayer = playerService.regNewPlayer();
+                    case EXIT ->System.exit(0);
+                    default-> printer.printError("Invalid input");
+                }
+            }else {
+                menu.displayMenu(MainMenu.class);
+                MainMenu userInput = inputService.getUserChoice(MainMenu.values());
+                switch (userInput){
+                    case CHALLANGE_SETTINGS -> challangeSettings();
+                    case START_CHALLANGE -> {
+                        game.startChallenge();
+                        game.showScore();
+                        Result result = new Result(currentPlayer.get(), game.getChallengeMode(), game.getComplexity() ,game.getScore());
+                        resultsService.saveResult(result);
+                        printer.printMessage("");
+                    }
+                    case SHOW_MY_RESULTS ->resultsService.showMyResults(currentPlayer.get(),game.getChallengeMode(),game.getComplexity());
+                    case SHOW_TOP_10_RESULTS -> System.out.println("Top players");
+                    case SETTINGS -> accountSetttings(currentPlayer.get());
+                    case ADMIN_MENU -> adminMenu();
+                    case LOG_OUT -> currentPlayer = Optional.empty();
+                    case EXIT -> System.exit(0);
+                    default-> System.out.println("Invalid input");
+                }
+            }
+        }
     }
     private void challangeSettings(){
         while (true) {

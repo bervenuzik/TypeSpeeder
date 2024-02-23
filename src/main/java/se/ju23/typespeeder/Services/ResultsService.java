@@ -8,4 +8,5 @@ import se.ju23.typespeeder.Model.Result;
 public interface ResultsService {
     void saveResult(Result result);
     void showMyResults(Player player  , GameMode gameMode, GameComplexity complexity);
+    void showTop10Players(GameMode gameMode, GameComplexity complexity);
 }

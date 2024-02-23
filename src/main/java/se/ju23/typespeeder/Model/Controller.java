@@ -13,6 +13,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 //todo patch message
+//todd top10
 @Component
 public class Controller implements Controllable {
     @Autowired
@@ -72,17 +73,17 @@ public class Controller implements Controllable {
     public void start () {
         patch.getLatestUpdate();
 
-        while (true){
-            if(currentPlayer.isEmpty()){
-                menu.displayMenu(LoginMenu.class);
-                LoginMenu userInput = inputService.getUserChoice(LoginMenu.values());
-                switch (userInput){
-                    case LOGIN -> currentPlayer = playerService.login();
-                    case REGISTER -> currentPlayer = playerService.regNewPlayer();
-                    case EXIT ->System.exit(0);
-                    default-> printer.printError("Invalid input");
-                }
-            }else {
+//        while (true){
+//            if(currentPlayer.isEmpty()){
+//                menu.displayMenu(LoginMenu.class);
+//                LoginMenu userInput = inputService.getUserChoice(LoginMenu.values());
+//                switch (userInput){
+//                    case LOGIN -> currentPlayer = playerService.login();
+//                    case REGISTER -> currentPlayer = playerService.regNewPlayer();
+//                    case EXIT ->System.exit(0);
+//                    default-> printer.printError("Invalid input");
+//                }
+//            }else {
                 menu.displayMenu(MainMenu.class);
                 MainMenu userInput = inputService.getUserChoice(MainMenu.values());
                 switch (userInput){
@@ -95,15 +96,15 @@ public class Controller implements Controllable {
                         printer.printMessage("");
                     }
                     case SHOW_MY_RESULTS ->resultsService.showMyResults(currentPlayer.get(),game.getChallengeMode(),game.getComplexity());
-                    case SHOW_TOP_10_RESULTS -> System.out.println("Top players");
+                    case SHOW_TOP_10_RESULTS -> resultsService.showTop10Players(game.getChallengeMode(),game.getComplexity());
                     case SETTINGS -> accountSetttings(currentPlayer.get());
                     case ADMIN_MENU -> adminMenu();
                     case LOG_OUT -> currentPlayer = Optional.empty();
                     case EXIT -> System.exit(0);
                     default-> System.out.println("Invalid input");
-                }
+                //}
             }
-        }
+       // }
     }
     private void challangeSettings(){
         while (true) {

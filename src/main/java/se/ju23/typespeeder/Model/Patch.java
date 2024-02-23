@@ -24,6 +24,7 @@ public class Patch {
     private LocalDateTime realeaseDateTime;
     @Autowired
     private PrintService printer;
+    private String newVersionDescribtion;
 
     public Patch() {
 
@@ -80,14 +81,19 @@ public class Patch {
             printer.printError("Error occurred while trying to get the latest version. Error while closing the reader");
         }
         map = gson.fromJson(response.toString(), map.getClass());
-        latestVersion = map.get("tag_name");
+        String versionOnRemote = map.get("tag_name");
+        if(versionOnRemote != null) latestVersion = versionOnRemote;
+        String decribtion = map.get("body");
+        if(decribtion != null) newVersionDescribtion = decribtion;
         if(isUpdateAvailable()) {
             printer.printWarning("New version available: " + latestVersion);
+            printer.printWarning("Description: " + newVersionDescribtion);
         } else {
             printer.printSuccess("You are using the latest version: " + currentVersion);
         }
         String date = map.get("published_at");
         if(date != null) realeaseDateTime = LocalDateTime.parse(date.substring(0,date.length()-1),formatter);
+
     }
     private boolean isUpdateAvailable() {
         return !latestVersion.equals(currentVersion);

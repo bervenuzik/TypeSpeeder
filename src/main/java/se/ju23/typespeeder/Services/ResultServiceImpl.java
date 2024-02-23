@@ -37,5 +37,14 @@ public class ResultServiceImpl  implements ResultsService{
             printer.printMessage(result.toString());
         }
     }
+
+    @Override
+    public void showTop10Players(GameMode gameMode, GameComplexity complexity) {
+        List<Result> results = resultRepo.findTop10ByGameModeAndComplexity(gameMode , complexity);
+        printer.printMessage(results.toString());
+        for (Result result : results) {
+            printer.printMessage(result.toString());
+        }
+    }
 }
 

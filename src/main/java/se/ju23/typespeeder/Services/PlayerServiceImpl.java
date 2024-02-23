@@ -272,6 +272,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     }
 
+
     private String takeInNickname() {
         String  nickname;
         printer.printMessage("Write in your nickname:");
